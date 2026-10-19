@@ -1,0 +1,23 @@
+{
+  "name": "Entreno",
+  "short_name": "Entreno",
+  "description": "Plan de entrenamiento en casa con progresión automática y temporizador.",
+  "lang": "es-AR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#11161D",
+  "theme_color": "#2447C8",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Sesión de hoy", "short_name": "Sesión", "url": "./?a=sesion", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Registrar actividad", "short_name": "Actividad", "url": "./?a=actividad", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Cómo amaneciste", "short_name": "Registro", "url": "./?a=registro", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Movilidad 10 min", "short_name": "Movilidad", "url": "./?a=micro", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
+  ]
+}
