@@ -259,6 +259,27 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 32px; }
 .note-warn { background: var(--warn-soft); border-radius: var(--r-md); padding: 10px 12px; font-size: .92rem; }
 .copy-area { font: .85rem/1.4 ui-monospace, monospace; }
 
+.test-g { display: flex; flex-direction: column; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); }
+.test-g h3 { display: flex; align-items: center; gap: 10px; }
+.tn { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: .8rem; font-weight: 800; display: inline-grid; place-items: center; font-variant-numeric: tabular-nums; }
+.g-det { border-radius: var(--r-md); background: var(--surface-2); }
+.g-det > summary { cursor: pointer; padding: 12px 14px; font-weight: 650; color: var(--accent); list-style: none; display: flex; align-items: center; gap: 10px; min-height: 46px; }
+.g-det > summary::-webkit-details-marker { display: none; }
+.g-det > summary::after { content: "+"; margin-left: auto; font-size: 1.2rem; font-weight: 500; }
+.g-det[open] > summary::after { content: "−"; }
+.g-det.card-like > summary { color: var(--ink); }
+.g-in { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+.g-in h4 { margin: 4px 0 0; }
+.g-meta { margin: 0; display: grid; gap: 6px; font-size: .9rem; }
+.g-meta div { display: grid; grid-template-columns: 84px 1fr; gap: 8px; }
+.g-meta dt { color: var(--muted); }
+.g-meta dd { margin: 0; }
+.g-steps { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 6px; }
+.g-steps li::marker { color: var(--accent); font-weight: 700; }
+.g-rec { background: var(--surface); border-radius: var(--r-sm); padding: 10px 12px; font-size: .92rem; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.card .btn-row .btn { flex: 1 1 140px; }
+
 /* Hoja inferior */
 .sheet { position: fixed; inset: 0; z-index: 30; display: flex; align-items: flex-end; justify-content: center; background: rgba(10, 15, 25, 0); transition: background .18s; }
 .sheet.open { background: rgba(10, 15, 25, .45); }

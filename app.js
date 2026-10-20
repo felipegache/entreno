@@ -1,7 +1,7 @@
 /* Entreno — lógica de la app: estado, motor de progresión, temporizador y pantallas. */
 'use strict';
 
-const APP_VERSION = '1.0.0';
+const APP_VERSION = '1.1.0';
 const STORE_KEY = 'entreno.v1';
 
 /* ============================================================
@@ -672,7 +672,7 @@ function renderHoy() {
     ${al.length ? `<section class="alerts" aria-label="Avisos">${al.map((a) => `
       <div class="alert ${a.lvl}"><strong>${esc(a.t)}</strong><p>${esc(a.d)}</p>${a.act ? `<button type="button" class="btn small" data-act="${a.act}">${esc(a.actLabel)}</button>` : ''}</div>`).join('')}</section>` : ''}
 
-    ${noTests ? `<section class="card tests-cta"><h3>Tests de la semana 0</h3><p>Antes de la primera sesión: tus números de partida. Unos 30 minutos.</p><button type="button" class="btn" data-act="tests">Cargar tests</button></section>` : ''}
+    ${noTests ? `<section class="card tests-cta"><h3>Tests de la semana 0</h3><p>Antes de la primera sesión: tus números de partida. Unos 30-40 minutos.</p><div class="btn-row"><button type="button" class="btn" data-act="testguide">Ver cómo se hacen</button><button type="button" class="btn primary" data-act="tests">Cargar resultados</button></div></section>` : ''}
     ${testsDue ? `<section class="card tests-cta"><h3>Tests del final de la fase</h3><p>Hacelos esta semana, después de entrar en calor.</p><button type="button" class="btn" data-act="tests">Cargar tests</button></section>` : ''}
 
     ${weekendPrompt()}
@@ -900,14 +900,35 @@ function checkinSave() {
   };
   save(); closeSheet(); render(); toast('Registro guardado');
 }
+function guideBody(g) {
+  const vid = g.q ? 'https://www.youtube.com/results?search_query=' + encodeURIComponent(g.q) : null;
+  return `<p>${esc(g.what)}</p>
+    <dl class="g-meta"><div><dt>Cuándo</dt><dd>${esc(g.when)}</dd></div><div><dt>Tiempo</dt><dd>${esc(g.time)}</dd></div><div><dt>Necesitás</dt><dd>${esc(g.gear)}</dd></div></dl>
+    <h4>Cómo se hace</h4><ol class="g-steps">${g.steps.map((x) => `<li>${esc(x)}</li>`).join('')}</ol>
+    ${g.tips && g.tips.length ? `<h4>Atención</h4><ul class="dots warn">${g.tips.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+    <p class="g-rec"><strong>Qué anotás:</strong> ${esc(g.record)}</p>
+    ${vid ? `<a class="btn block video" href="${esc(vid)}" target="_blank" rel="noopener">${IC.video}<span>Ver cómo se hace en YouTube</span></a>` : ''}`;
+}
+function testInput(t, last) {
+  const side = /_i$/.test(t.id) ? 'Izquierda' : /_d$/.test(t.id) ? 'Derecha' : 'Resultado';
+  return `<label class="field"><span>${side}</span><div class="unit-in"><input type="number" id="t-${t.id}" inputmode="decimal" step="${t.step || 1}" placeholder="${last && last.values[t.id] != null ? 'antes: ' + fmtNum(last.values[t.id]) : '—'}"><em>${esc(t.unit)}</em></div></label>`;
+}
 function testsSheet() {
   const last = S.tests[S.tests.length - 1];
   sheet(`
-    <p class="muted">Siempre en las mismas condiciones: misma hora, mismo calzado, después de entrar en calor. Dejá vacío lo que no midas.</p>
+    <p class="muted">Hacelos en este orden, con las mismas condiciones cada vez: misma hora, mismo calzado, después de 10 minutos de entrada en calor. Tocá <strong>Cómo se hace</strong> en cada uno. Dejá vacío lo que no midas.</p>
     <label class="field"><span>Fecha</span><input type="date" id="t-date" value="${isoDate()}"></label>
-    ${TESTS.map((t) => `<label class="field test-f"><span>${esc(t.label)}${t.hint ? `<small>${esc(t.hint)}</small>` : ''}</span><div class="unit-in"><input type="number" id="t-${t.id}" inputmode="decimal" step="${t.step || 1}" placeholder="${last && last.values[t.id] != null ? 'antes: ' + fmtNum(last.values[t.id]) : '—'}"><em>${esc(t.unit)}</em></div></label>`).join('')}
-    <p class="muted small-note">${esc(CAIT_INFO)}</p>
+    ${TEST_GUIDES.map((g, i) => `<section class="test-g">
+      <div class="row-between"><h3><span class="tn">${i + 1}</span>${esc(g.title)}</h3><span class="muted">${esc(g.time)}</span></div>
+      <details class="g-det"><summary>Cómo se hace</summary><div class="g-in">${guideBody(g)}</div></details>
+      <div class="${g.fields.length > 1 ? 'grid2' : ''}">${g.fields.map((f) => testInput(TESTS.find((t) => t.id === f), last)).join('')}</div>
+    </section>`).join('')}
     <button type="button" class="btn primary block" data-act="testsave">Guardar tests</button>`, { title: 'Tests' });
+}
+function testsGuide() {
+  sheet(`<p class="muted">Los 12 tests de la semana 0, que se repiten al final de cada fase. En total, unos 30-40 minutos repartidos en 2 días (pulso y peso van en mañanas separadas).</p>
+    ${TEST_GUIDES.map((g, i) => `<details class="g-det card-like"><summary><span class="tn">${i + 1}</span>${esc(g.title)}</summary><div class="g-in">${guideBody(g)}</div></details>`).join('')}
+    <button type="button" class="btn primary block" data-act="tests">Cargar resultados</button>`, { title: 'Cómo hacer los tests' });
 }
 function testsSave() {
   const values = {};
@@ -1117,7 +1138,7 @@ function renderMas() {
       ${menuRow('ejercicios', 'Ejercicios', 'Fichas, niveles y videos de cada ejercicio')}
       ${menuRow('glosario', 'Glosario', 'Qué significa RIR, tempo, descarga y el resto')}
       ${menuRow('plan', 'Cómo funciona el plan', 'Fases, rampa semanal y reglas de la app')}
-      <li><button type="button" class="menu-r" data-act="tests"><span><strong>Tests</strong><small>Cargar una medición nueva</small></span>${IC.chev}</button></li>
+      <li><button type="button" class="menu-r" data-act="testguide"><span><strong>Tests</strong><small>Cómo se hace cada uno y cargar resultados</small></span>${IC.chev}</button></li>
       <li><button type="button" class="menu-r" data-act="micro"><span><strong>Microsesión de movilidad</strong><small>10 minutos para los días libres</small></span>${IC.chev}</button></li>
       ${menuRow('ajustes', 'Temporizador y sonido', 'Modo, cuenta regresiva, pitidos y vibración')}
       ${menuRow('respaldo', 'Exportar y respaldo', 'Archivo para la revisión, copia de seguridad, restaurar')}
@@ -1353,6 +1374,7 @@ document.addEventListener('click', (e) => {
     case 'cisave': checkinSave(); break;
     case 'tests': testsSheet(); break;
     case 'testsave': testsSave(); break;
+    case 'testguide': testsGuide(); break;
     case 'deload': S.deloadLeft = 3; save(); render(); toast('Las próximas 3 sesiones van con la mitad del volumen'); break;
     case 'micro': closeSheetQuiet(); startMicro(); break;
     case 'sub': masSub = b.dataset.k || null; renderMas(); window.scrollTo(0, 0); break;

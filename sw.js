@@ -1,5 +1,5 @@
 /* Service worker: guarda la app para usarla sin conexión. Cambiar VERSION en cada actualización. */
-const VERSION = 'entreno-v1.0.0';
+const VERSION = 'entreno-v1.1.0';
 const FILES = ['./', './index.html', './app.js', './data.js', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(VERSION).then((c) => c.addAll(FILES))); });
 self.addEventListener('activate', (e) => {
